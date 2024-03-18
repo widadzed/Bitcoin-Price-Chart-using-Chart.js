@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bitcoin Price Chart</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Bitcoin Price Chart</h1>
+  <canvas id="bitcoin-chart" ></canvas>
+  <script>
+   async function fetchData() {
+  try {
+    const response = await fetch('https://api.coindesk.com/v1/bpi/historical/close.json');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+
+function extractChartData(data) {
+  const dates = Object.keys(data.bpi);
+  const prices = Object.values(data.bpi);
+  return { dates, prices };
+}
+
+async function createChart() {
+  const data = await fetchData();
+  const chartData = extractChartData(data);
+
+  
+  const ctx = document.getElementById('bitcoin-chart');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartData.dates,
+      datasets: [{
+        label: 'Price',
+        data: chartData.prices,
+        borderColor: 'blue',
+        
+      }]
+    },
+  });
+}
+
+createChart();
+</script>
+</body>
+</html>
